@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/felixge/fgprof"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -22,6 +23,8 @@ import (
 	"goji.io/pat"
 	"golang.org/x/crypto/bcrypt"
 	_ "net/http/pprof"
+
+	_ "github.com/felixge/fgprof"
 )
 
 const (
@@ -280,10 +283,12 @@ func init() {
 }
 
 func main() {
+	// http.DefaultServeMux.Handle("/debug/pprof/profile", fgprof.Handler())
+	http.DefaultServeMux.Handle("/debug/fgprof", fgprof.Handler())
 	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
+		http.ListenAndServe(":6060", nil)
 	}()
-	
+
 	host := os.Getenv("MYSQL_HOST")
 	if host == "" {
 		host = "127.0.0.1"
